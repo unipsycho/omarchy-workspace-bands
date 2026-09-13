@@ -5,6 +5,8 @@ Omarchy bar widget by **Agile Automation** for shaping the focused workspace:
 - **Dwindle:** side-locked tiling bands (left / top at 50% or 75% — right or bottom stays open)
 - **Scrolling:** one / two / three column density
 
+![Workspace Bands dropdown — Dwindle bands and Scrolling columns](preview.png)
+
 > Like all Omarchy shell plugins, this runs **unsandboxed** inside `omarchy-shell`
 > and can run `hyprctl` / shell snippets. Read the source before installing.
 
