@@ -1,0 +1,126 @@
+#!/usr/bin/env bash
+# omarchy-workspace-bands — set/cycle Hyprland scrolling column density.
+set -euo pipefail
+
+STATE_DIR="${XDG_STATE_HOME:-$HOME/.local/state}/omarchy/workspace-bands"
+STATE_FILE="$STATE_DIR/config.lua"
+COLUMNS_FILE="$STATE_DIR/columns"
+IPC_TARGET="agileautomation.workspace-bands"
+
+usage() {
+  echo "Usage: omarchy-workspace-bands get|set <1|2|3>|cycle" >&2
+}
+
+# Only accept plain decimal widths (blocks Lua/shell injection via env overrides).
+validate_width() {
+  local raw=$1
+  [[ $raw =~ ^[0-9]+([.][0-9]+)?$ ]] || return 1
+  awk -v w="$raw" 'BEGIN { exit (w+0 >= 0.1 && w+0 <= 1.0) ? 0 : 1 }'
+}
+
+normalize_width() {
+  local raw=$1 fallback=$2
+  if validate_width "$raw"; then
+    printf '%s' "$raw"
+  else
+    printf '%s' "$fallback"
+  fi
+}
+
+WIDTH_ONE=$(normalize_width "${SCROLLING_COLUMNS_ONE:-0.96}" "0.96")
+WIDTH_TWO=$(normalize_width "${SCROLLING_COLUMNS_TWO:-0.49}" "0.49")
+WIDTH_THREE=$(normalize_width "${SCROLLING_COLUMNS_THREE:-0.32}" "0.32")
+
+width_for() {
+  case "$1" in
+    1) printf '%s' "$WIDTH_ONE" ;;
+    2) printf '%s' "$WIDTH_TWO" ;;
+    3) printf '%s' "$WIDTH_THREE" ;;
+    *) return 1 ;;
+  esac
+}
+
+label_for() {
+  case "$1" in
+    1) echo "one column" ;;
+    2) echo "two columns" ;;
+    3) echo "three columns" ;;
+  esac
+}
+
+current_width() {
+  hyprctl -j getoption scrolling:column_width 2>/dev/null | jq -r '.float // empty'
+}
+
+current_columns() {
+  if [[ -f $COLUMNS_FILE ]]; then
+    local saved
+    saved=$(<"$COLUMNS_FILE")
+    if [[ $saved =~ ^[123]$ ]]; then
+      echo "$saved"
+      return
+    fi
+  fi
+
+  local w
+  w=$(current_width)
+  [[ -n $w ]] || { echo 2; return; }
+
+  awk -v w="$w" -v a="$WIDTH_ONE" -v b="$WIDTH_TWO" -v c="$WIDTH_THREE" 'BEGIN {
+    d1 = (w - a); if (d1 < 0) d1 = -d1
+    d2 = (w - b); if (d2 < 0) d2 = -d2
+    d3 = (w - c); if (d3 < 0) d3 = -d3
+    if (d1 <= d2 && d1 <= d3) print 1
+    else if (d2 <= d3) print 2
+    else print 3
+  }'
+}
+
+apply_columns() {
+  local cols=$1
+  local width
+  width=$(width_for "$cols") || {
+    echo "invalid columns: $cols (want 1, 2, or 3)" >&2
+    return 1
+  }
+  validate_width "$width" || {
+    echo "invalid width for columns $cols: $width" >&2
+    return 1
+  }
+
+  mkdir -p "$STATE_DIR"
+  printf '%s\n' "$cols" >"$COLUMNS_FILE"
+  printf 'hl.config({ scrolling = { column_width = %s } })\n' "$width" >"$STATE_FILE"
+
+  # Omarchy's Lua parser refuses hyprctl keyword; eval applies live.
+  hyprctl eval "hl.config({ scrolling = { column_width = $width } })" >/dev/null
+
+  # column_width only affects *new* columns — resize existing ones now.
+  hyprctl dispatch "hl.dsp.layout(\"colresize all $width\")" >/dev/null
+
+  # Tell the bar widget to refresh its icon (best-effort).
+  omarchy-shell "$IPC_TARGET" sync "$cols" >/dev/null 2>&1 || true
+
+  omarchy-notification-send -g 󰯋 "Scrolling: $(label_for "$cols")"
+  echo "$cols"
+}
+
+cmd=${1:-}
+case "$cmd" in
+  get)
+    current_columns
+    ;;
+  set)
+    [[ -n ${2-} ]] || { usage; exit 1; }
+    apply_columns "$2"
+    ;;
+  cycle)
+    cur=$(current_columns)
+    next=$((cur % 3 + 1))
+    apply_columns "$next"
+    ;;
+  *)
+    usage
+    exit 1
+    ;;
+esac

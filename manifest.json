@@ -1,0 +1,89 @@
+{
+  "schemaVersion": 1,
+  "id": "agileautomation.workspace-bands",
+  "name": "Workspace Bands",
+  "version": "1.3.0",
+  "author": "Agile Automation",
+  "license": "MIT",
+  "description": "Shape the focused workspace: dwindle side bands and scrolling column density",
+  "homepage": "https://github.com/unipsycho/omarchy-workspace-bands",
+  "repository": "https://github.com/unipsycho/omarchy-workspace-bands",
+  "keywords": [
+    "workspace",
+    "bands",
+    "scrolling",
+    "columns",
+    "tiling",
+    "gaps",
+    "layout",
+    "hyprland",
+    "bar-widget"
+  ],
+  "kinds": [
+    "bar-widget"
+  ],
+  "entryPoints": {
+    "barWidget": "Panel.qml"
+  },
+  "barWidget": {
+    "displayName": "Workspace Bands",
+    "description": "Dwindle side bands and scrolling column density for the focused workspace",
+    "category": "Window management",
+    "allowMultiple": false,
+    "defaultSection": "left",
+    "defaults": {
+      "oneWidth": 0.96,
+      "twoWidth": 0.49,
+      "threeWidth": 0.32,
+      "halfFraction": 0.5,
+      "largeFraction": 0.75
+    },
+    "schema": [
+      {
+        "key": "oneWidth",
+        "type": "number",
+        "label": "Column width for one-column mode",
+        "min": 0.5,
+        "max": 1,
+        "step": 0.01,
+        "defaultValue": 0.96
+      },
+      {
+        "key": "twoWidth",
+        "type": "number",
+        "label": "Column width for two-column mode",
+        "min": 0.3,
+        "max": 0.7,
+        "step": 0.01,
+        "defaultValue": 0.49
+      },
+      {
+        "key": "threeWidth",
+        "type": "number",
+        "label": "Column width for three-column mode",
+        "min": 0.2,
+        "max": 0.5,
+        "step": 0.01,
+        "defaultValue": 0.32
+      },
+      {
+        "key": "halfFraction",
+        "type": "number",
+        "label": "Tiling band fraction for 50% modes",
+        "min": 0.25,
+        "max": 0.9,
+        "step": 0.05,
+        "defaultValue": 0.5
+      },
+      {
+        "key": "largeFraction",
+        "type": "number",
+        "label": "Tiling band fraction for 75% modes",
+        "min": 0.5,
+        "max": 0.95,
+        "step": 0.05,
+        "defaultValue": 0.75
+      }
+    ]
+  }
+}
