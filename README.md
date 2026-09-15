@@ -1,9 +1,12 @@
 # Workspace Bands
 
-Omarchy bar widget by **Agile Automation** for shaping the focused workspace:
+Omarchy bar widget by **Agile Automation** for shaping the focused workspace.
 
-- **Dwindle:** side-locked tiling bands (left / top at 50% or 75% — right or bottom stays open)
-- **Scrolling:** one / two / three column density
+**Dwindle** locks tiling into a left or top band at 50% or 75%, so the right or bottom of the screen stays open for floating windows, reference apps, or empty space. Options: Full, Left 75%, Left 50%, Top 75%, Top 50%.
+
+**Scrolling** sets how many columns fit on screen — one, two, or three — and updates existing columns live (`colresize all`).
+
+Both modes are **key-driven** as well as clickable: open the dropdown from the bar icon, or cycle without leaving the keyboard.
 
 ![Workspace Bands dropdown — Dwindle bands and Scrolling columns](preview.png)
 

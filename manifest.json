@@ -2,10 +2,10 @@
   "schemaVersion": 1,
   "id": "agileautomation.workspace-bands",
   "name": "Workspace Bands",
-  "version": "1.3.0",
+  "version": "1.4.0",
   "author": "Agile Automation",
   "license": "MIT",
-  "description": "Shape the focused workspace: dwindle side bands and scrolling column density",
+  "description": "Shape the focused workspace two ways. Dwindle: lock tiling to a left or top band (50% or 75%) so the rest of the screen stays open. Scrolling: fit one, two, or three columns on screen and resize existing columns live. Click the bar icon or drive it from the keyboard — Super+Alt+L cycles bands, Super+Shift+L cycles columns, Super+L toggles dwindle ↔ scrolling.",
   "homepage": "https://github.com/unipsycho/omarchy-workspace-bands",
   "repository": "https://github.com/unipsycho/omarchy-workspace-bands",
   "keywords": [
@@ -14,8 +14,11 @@
     "scrolling",
     "columns",
     "tiling",
+    "dwindle",
     "gaps",
     "layout",
+    "keybind",
+    "hotkey",
     "hyprland",
     "bar-widget"
   ],
@@ -27,7 +30,7 @@
   },
   "barWidget": {
     "displayName": "Workspace Bands",
-    "description": "Dwindle side bands and scrolling column density for the focused workspace",
+    "description": "Dwindle left/top bands (50%/75%) and scrolling 1/2/3 columns — click or cycle with Super+Alt+L / Super+Shift+L",
     "category": "Window management",
     "allowMultiple": false,
     "defaultSection": "left",
